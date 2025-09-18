@@ -189,19 +189,55 @@ namespace STD_EXT_HPP_NAMESPACE_CAPITAL
 
       public:
         inline constexpr operator bool() const noexcept { return null.idx_ != idx_; }
-        inline constexpr operator Idx() const noexcept { return idx_; }
         inline constexpr bool operator==(const ts_idx& x) const noexcept { return idx_ == x.idx_; }
         inline constexpr bool operator<=(const ts_idx& x) const noexcept { return idx_ <= x.idx_; }
         inline constexpr bool operator>=(const ts_idx& x) const noexcept { return idx_ >= x.idx_; }
         inline constexpr bool operator<(const ts_idx& x) const noexcept { return idx_ < x.idx_; }
         inline constexpr bool operator>(const ts_idx& x) const noexcept { return idx_ > x.idx_; }
-        inline constexpr bool operator==(const Idx& x) const noexcept { return idx_ == x; }
-        inline constexpr bool operator<=(const Idx& x) const noexcept { return idx_ <= x; }
-        inline constexpr bool operator>=(const Idx& x) const noexcept { return idx_ >= x; }
-        inline constexpr bool operator<(const Idx& x) const noexcept { return idx_ < x; }
-        inline constexpr bool operator>(const Idx& x) const noexcept { return idx_ > x; }
         inline static consteval decltype(C) idx_class() noexcept { return C; };
         inline const ts_idx off_by(long long off) const noexcept { return *this ? ts_idx(idx_ + off) : null; };
+
+        template <std::integral I>
+        inline constexpr //
+        operator I() const noexcept
+        {
+            return idx_;
+        }
+
+        template <std::integral I>
+        inline constexpr bool //
+        operator==(const I& x) const noexcept
+        {
+            return idx_ == x;
+        }
+
+        template <std::integral I>
+        inline constexpr bool //
+        operator<=(const I& x) const noexcept
+        {
+            return idx_ <= x;
+        }
+
+        template <std::integral I>
+        inline constexpr bool //
+        operator>=(const I& x) const noexcept
+        {
+            return idx_ >= x;
+        }
+
+        template <std::integral I>
+        inline constexpr bool //
+        operator<(const I& x) const noexcept
+        {
+            return idx_ < x;
+        }
+
+        template <std::integral I>
+        inline constexpr bool //
+        operator>(const I& x) const noexcept
+        {
+            return idx_ > x;
+        }
 
         ts_idx() = default;
     };
