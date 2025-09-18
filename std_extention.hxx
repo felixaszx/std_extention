@@ -584,7 +584,7 @@ namespace STD_EXT_HPP_NAMESPACE::literals
     inline consteval float //
     operator""_flong(long double f)
     {
-        return static_cast<long double>(f);
+        return static_cast<flong>(f);
     }
 
     inline consteval float //
@@ -602,7 +602,7 @@ namespace STD_EXT_HPP_NAMESPACE::literals
     inline consteval float //
     operator""_flong(unsigned long long f)
     {
-        return static_cast<long double>(f);
+        return static_cast<flong>(f);
     }
 
     template <typename To, typename From>
