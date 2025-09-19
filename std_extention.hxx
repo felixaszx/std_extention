@@ -390,50 +390,23 @@ namespace STD_EXT_HPP_NAMESPACE
         }
     };
 
-    template <typename... Args>
-    struct logln
+    constexpr void //
+    line_out(const std::string_view& msg,
+             const std::string_view& prefix,
+             std::source_location src = std::source_location::current())
     {
-        inline constexpr //
-            logln(std::string_view format, Args&&... msg, std::source_location src = std::source_location::current())
-        {
-            std::cout << std::format("[{}] {} ({}:{}:{})\n", "LOG",                       //
-                                     std::vformat(format, std::make_format_args(msg...)), //
-                                     src.file_name(), src.line(), src.column());
-        }
-    };
+        std::cout << std::format("[{}] {} ({}:{}:{})\n", prefix, //
+                                 msg,                            //
+                                 src.file_name(), src.line(), src.column());
+    }
 
-    template <typename... Args>
-    struct errln
-    {
-        inline constexpr //
-            errln(std::string_view format, Args&&... msg, std::source_location src = std::source_location::current())
-        {
-            std::cerr << std::format("[{}] {} ({}:{}:{})\n", "ERROR",                     //
-                                     std::vformat(format, std::make_format_args(msg...)), //
-                                     src.file_name(), src.line(), src.column());
-        }
-    };
-
-    template <typename... Args>
-    struct warnln
-    {
-        inline constexpr //
-            warnln(std::string_view format, Args&&... msg, std::source_location src = std::source_location::current())
-        {
-            std::cout << std::format("[{}] {} ({}:{}:{})\n", "WARNING",                   //
-                                     std::vformat(format, std::make_format_args(msg...)), //
-                                     src.file_name(), src.line(), src.column());
-        }
-    };
-
-    template <typename... Args> //
-    logln(std::string_view, Args&&...) -> logln<Args...>;
-
-    template <typename... Args> //
-    errln(std::string_view, Args&&...) -> errln<Args...>;
-
-    template <typename... Args> //
-    warnln(std::string_view, Args&&...) -> warnln<Args...>;
+#define warrln(...) line_out(std::format(__VA_ARGS__), "WARNING", std::source_location::current())
+#define errln(...)  line_out(std::format(__VA_ARGS__), "ERROR", std::source_location::current())
+#if defined(NDEBUG)
+    #define logln(...)
+#else
+    #define logln(...) line_out(std::format(__VA_ARGS__), "LOG", std::source_location::current())
+#endif
 
     template <typename... F>
     inline constexpr i_::overload_call_t<F...> //
