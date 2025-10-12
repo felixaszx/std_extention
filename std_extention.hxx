@@ -75,43 +75,219 @@ namespace STD_EXT_HPP_NAMESPACE::i_ // internal namespace
         return x == limit_v_t<L>::template as<M>;
     }
 
-    struct max_v_t : public limit_v_t<max_v_t>
+    template <bool S = false>
+    struct max_v_t : public limit_v_t<max_v_t<S>>
     {
         template <typename M>
         inline consteval //
         operator M() const
         {
-            return std::numeric_limits<M>::max();
+            if constexpr (S)
+            {
+                return -std::numeric_limits<M>::max();
+            }
+            else
+            {
+                return std::numeric_limits<M>::max();
+            }
+        }
+
+        inline consteval const max_v_t<!S> //
+        operator-() const
+        {
+            return max_v_t<!S>();
         }
 
         template <typename M>
         inline static const M as = std::numeric_limits<M>::max();
     };
 
-    struct min_v_t : public limit_v_t<min_v_t>
+    template <bool S = false>
+    struct min_v_t : public limit_v_t<min_v_t<S>>
     {
         template <typename M>
         inline consteval //
         operator M() const
         {
-            return std::numeric_limits<M>::min();
+            if constexpr (S)
+            {
+                return -std::numeric_limits<M>::min();
+            }
+            else
+            {
+                return std::numeric_limits<M>::min();
+            }
+        }
+
+        inline consteval const min_v_t<!S> //
+        operator-() const
+        {
+            return min_v_t<!S>();
         }
 
         template <typename M>
         inline static const M as = std::numeric_limits<M>::min();
     };
 
-    struct inf_v_t : public limit_v_t<inf_v_t>
+    template <bool S = false>
+    struct inf_v_t : public limit_v_t<inf_v_t<S>>
     {
         template <typename M>
         inline consteval //
         operator M() const
         {
-            return std::numeric_limits<M>::infinity();
+            if constexpr (S)
+            {
+                return -std::numeric_limits<M>::infinity();
+            }
+            else
+            {
+                return std::numeric_limits<M>::infinity();
+            }
+        }
+
+        inline consteval const inf_v_t<!S> //
+        operator-() const
+        {
+            return inf_v_t<!S>();
         }
 
         template <typename M>
         inline static const M as = std::numeric_limits<M>::infinity();
+    };
+
+    template <bool S = false>
+    struct epsilon_v_t : public limit_v_t<epsilon_v_t<S>>
+    {
+        template <typename M>
+        inline consteval //
+        operator M() const
+        {
+            if constexpr (S)
+            {
+                return -std::numeric_limits<M>::epsilon();
+            }
+            else
+            {
+                return std::numeric_limits<M>::epsilon();
+            }
+        }
+
+        inline consteval const epsilon_v_t<!S> //
+        operator-() const
+        {
+            return epsilon_v_t<!S>();
+        }
+
+        template <typename M>
+        inline static const M as = std::numeric_limits<M>::epsilon();
+    };
+
+    template <bool S = false>
+    struct lowest_v_t : public limit_v_t<lowest_v_t<S>>
+    {
+        template <typename M>
+        inline consteval //
+        operator M() const
+        {
+            if constexpr (S)
+            {
+                return -std::numeric_limits<M>::lowest();
+            }
+            else
+            {
+                return std::numeric_limits<M>::lowest();
+            }
+        }
+
+        inline consteval const lowest_v_t<!S> //
+        operator-() const
+        {
+            return lowest_v_t<!S>();
+        }
+
+        template <typename M>
+        inline static const M as = std::numeric_limits<M>::lowest();
+    };
+
+    struct quiet_NaN_v_t : public limit_v_t<quiet_NaN_v_t>
+    {
+        template <typename M>
+        inline consteval //
+        operator M() const
+        {
+            return std::numeric_limits<M>::quiet_NaN();
+        }
+
+        template <typename M>
+        inline static const M as = std::numeric_limits<M>::quiet_NaN();
+    };
+
+    struct sig_NaN_v_t : public limit_v_t<sig_NaN_v_t>
+    {
+        template <typename M>
+        inline consteval //
+        operator M() const
+        {
+            return std::numeric_limits<M>::signaling_NaN();
+        }
+
+        template <typename M>
+        inline static const M as = std::numeric_limits<M>::signaling_NaN();
+    };
+
+    template <bool S = false>
+    struct round_error_v_t : public limit_v_t<round_error_v_t<S>>
+    {
+        template <typename M>
+        inline consteval //
+        operator M() const
+        {
+            if constexpr (S)
+            {
+                return -std::numeric_limits<M>::round_error();
+            }
+            else
+            {
+                return std::numeric_limits<M>::round_error();
+            }
+        }
+
+        inline consteval const round_error_v_t<!S> //
+        operator-() const
+        {
+            return round_error_v_t<!S>();
+        }
+
+        template <typename M>
+        inline static const M as = std::numeric_limits<M>::round_error();
+    };
+
+    template <bool S = false>
+    struct denorm_min_v_t : public limit_v_t<denorm_min_v_t<S>>
+    {
+        template <typename M>
+        inline consteval //
+        operator M() const
+        {
+            if constexpr (S)
+            {
+                return -std::numeric_limits<M>::denorm_min();
+            }
+            else
+            {
+                return std::numeric_limits<M>::denorm_min();
+            }
+        }
+
+        inline consteval const denorm_min_v_t<!S> //
+        operator-() const
+        {
+            return denorm_min_v_t<!S>();
+        }
+
+        template <typename M>
+        inline static const M as = std::numeric_limits<M>::denorm_min();
     };
 }; // namespace STD_EXT_HPP_NAMESPACE::i_
 
@@ -143,9 +319,17 @@ namespace STD_EXT_HPP_NAMESPACE_CAPITAL
     using f64 = double;
     using flong = long double;
 
+    inline static const std_ext::i_::quiet_NaN_v_t quiet_NaN = {};
+    inline static const std_ext::i_::sig_NaN_v_t sig_NaN = {};
+    inline static const std_ext::i_::quiet_NaN_v_t nan_v = {};
+
+    inline static const std_ext::i_::min_v_t min_v = {};
+    inline static const std_ext::i_::lowest_v_t lowest_v = {};
     inline static const std_ext::i_::max_v_t max_v = {};
-    inline static const std_ext::i_::max_v_t min_v = {};
+    inline static const std_ext::i_::epsilon_v_t epsilon_v = {};
+    inline static const std_ext::i_::round_error_v_t round_err_v = {};
     inline static const std_ext::i_::inf_v_t inf_v = {};
+    inline static const std_ext::i_::denorm_min_v_t denorm_min_v = {};
 
     // atomic variants
     using atomic_bool = std::atomic<bool>;
@@ -173,7 +357,7 @@ namespace STD_EXT_HPP_NAMESPACE_CAPITAL
     using atomic_f32 = std::atomic<f32>;
     using atomic_f64 = std::atomic<f64>;
 
-    template <auto C = std::numeric_limits<std::size_t>::max(), typename Idx = std::size_t, typename Accessor = void>
+    template <typename Idx = std::size_t, auto C = std::numeric_limits<std::size_t>::max(), typename Accessor = void>
         requires std::unsigned_integral<Idx>
     class ts_idx
     {
@@ -185,7 +369,6 @@ namespace STD_EXT_HPP_NAMESPACE_CAPITAL
 
       private:
         Idx idx_ = static_cast<Idx>(-1);
-        inline constexpr ts_idx(Idx i) { idx_ = i; }
 
       public:
         inline constexpr operator bool() const noexcept { return null.idx_ != idx_; }
@@ -194,6 +377,7 @@ namespace STD_EXT_HPP_NAMESPACE_CAPITAL
         inline constexpr bool operator>=(const ts_idx& x) const noexcept { return idx_ >= x.idx_; }
         inline constexpr bool operator<(const ts_idx& x) const noexcept { return idx_ < x.idx_; }
         inline constexpr bool operator>(const ts_idx& x) const noexcept { return idx_ > x.idx_; }
+        inline constexpr ts_idx(Idx i) { idx_ = i; }
         inline static consteval decltype(C) idx_class() noexcept { return C; };
         inline const ts_idx off_by(long long off) const noexcept { return *this ? ts_idx(idx_ + off) : null; };
 
@@ -242,6 +426,32 @@ namespace STD_EXT_HPP_NAMESPACE_CAPITAL
         ts_idx() = default;
     };
 
+    enum class cmp_result : signed char
+    {
+        less = -1,
+        equivalent = 0,
+        greater = 1
+    };
+
+    template <typename T>
+        requires(std::same_as<T, std::strong_ordering> || //
+                 std::same_as<T, std::weak_ordering> ||   //
+                 std::same_as<T, std::partial_ordering>)
+    constexpr cmp_result //
+    cmp_to_integral(T x)
+    {
+        return std::bit_cast<cmp_result>(x);
+    }
+
+    static_assert(cmp_to_integral(std::strong_ordering::less) == cmp_result::less);
+    static_assert(cmp_to_integral(std::strong_ordering::equivalent) == cmp_result::equivalent);
+    static_assert(cmp_to_integral(std::strong_ordering::greater) == cmp_result::greater);
+    static_assert(cmp_to_integral(std::weak_ordering::less) == cmp_result::less);
+    static_assert(cmp_to_integral(std::weak_ordering::equivalent) == cmp_result::equivalent);
+    static_assert(cmp_to_integral(std::weak_ordering::greater) == cmp_result::greater);
+    static_assert(cmp_to_integral(std::partial_ordering::less) == cmp_result::less);
+    static_assert(cmp_to_integral(std::partial_ordering::equivalent) == cmp_result::equivalent);
+    static_assert(cmp_to_integral(std::partial_ordering::greater) == cmp_result::greater);
 }; // namespace STD_EXT_HPP_NAMESPACE_CAPITAL
 
 namespace STD_EXT_HPP_NAMESPACE
@@ -391,8 +601,7 @@ namespace STD_EXT_HPP_NAMESPACE
     };
 
     constexpr void //
-    line_out(const std::string_view& msg,
-             const std::string_view& prefix,
+    line_out(const std::string_view& msg, const std::string_view& prefix,
              std::source_location src = std::source_location::current())
     {
         std::cout << std::format("[{}] {} ({}:{}:{})\n", prefix, //
@@ -403,9 +612,9 @@ namespace STD_EXT_HPP_NAMESPACE
 #define warrln(...) line_out(std::format(__VA_ARGS__), "WARNING", std::source_location::current())
 #define errln(...)  line_out(std::format(__VA_ARGS__), "ERROR", std::source_location::current())
 #if defined(NDEBUG)
-    #define logln(...)
+#define logln(...)
 #else
-    #define logln(...) line_out(std::format(__VA_ARGS__), "LOG", std::source_location::current())
+#define logln(...) line_out(std::format(__VA_ARGS__), "LOG", std::source_location::current())
 #endif
 
     template <typename... F>
@@ -524,19 +733,19 @@ namespace STD_EXT_HPP_NAMESPACE::literals
         return static_cast<std::uintmax_t>(i);
     }
 
-    inline consteval std::intmax_t //
+    inline consteval std::size_t //
     operator""_usz(unsigned long long i)
     {
         return static_cast<std::size_t>(i);
     }
 
-    inline consteval std::uintmax_t //
+    inline consteval std::ptrdiff_t //
     operator""_ssz(unsigned long long i)
     {
         return static_cast<std::ptrdiff_t>(i);
     }
 
-    inline consteval std::uintmax_t //
+    inline consteval std::ptrdiff_t //
     operator""_ptrdiff(unsigned long long i)
     {
         return static_cast<std::ptrdiff_t>(i);
