@@ -366,9 +366,10 @@ namespace STD_EXT_HPP_NAMESPACE_CAPITAL
       public:
         inline static const ts_idx null = static_cast<Idx>(-1);
         inline static const ts_idx zero = static_cast<Idx>(0);
+        using idx_t = Idx;
 
       private:
-        Idx idx_ = static_cast<Idx>(-1);
+        idx_t idx_ = static_cast<idx_t>(-1);
 
       public:
         inline constexpr operator bool() const noexcept { return null.idx_ != idx_; }
@@ -377,7 +378,7 @@ namespace STD_EXT_HPP_NAMESPACE_CAPITAL
         inline constexpr bool operator>=(const ts_idx& x) const noexcept { return idx_ >= x.idx_; }
         inline constexpr bool operator<(const ts_idx& x) const noexcept { return idx_ < x.idx_; }
         inline constexpr bool operator>(const ts_idx& x) const noexcept { return idx_ > x.idx_; }
-        inline constexpr ts_idx(Idx i) { idx_ = i; }
+        inline constexpr ts_idx(idx_t i) { idx_ = i; }
         inline static consteval decltype(C) idx_class() noexcept { return C; };
         inline const ts_idx off_by(long long off) const noexcept { return *this ? ts_idx(idx_ + off) : null; };
 
@@ -601,7 +602,8 @@ namespace STD_EXT_HPP_NAMESPACE
     };
 
     constexpr void //
-    line_out(const std::string_view& msg, const std::string_view& prefix,
+    line_out(const std::string_view& msg,
+             const std::string_view& prefix,
              std::source_location src = std::source_location::current())
     {
         std::cout << std::format("[{}] {} ({}:{}:{})\n", prefix, //
@@ -612,9 +614,9 @@ namespace STD_EXT_HPP_NAMESPACE
 #define warrln(...) line_out(std::format(__VA_ARGS__), "WARNING", std::source_location::current())
 #define errln(...)  line_out(std::format(__VA_ARGS__), "ERROR", std::source_location::current())
 #if defined(NDEBUG)
-#define logln(...)
+    #define logln(...)
 #else
-#define logln(...) line_out(std::format(__VA_ARGS__), "LOG", std::source_location::current())
+    #define logln(...) line_out(std::format(__VA_ARGS__), "LOG", std::source_location::current())
 #endif
 
     template <typename... F>
@@ -787,46 +789,18 @@ namespace STD_EXT_HPP_NAMESPACE::literals
         return static_cast<flong>(f);
     }
 
-    template <typename To, typename From>
-    inline constexpr To //
-    castc(From&& from)
-    {
-        return const_cast<To>(std::forward<From>(from));
-    }
-
-    template <typename To, typename From>
-    inline constexpr To //
-    castd(From&& from)
-    {
-        return dynamic_cast<To>(std::forward<From>(from));
-    }
-
-    template <typename To, typename From>
-    inline constexpr To //
-    castr(From&& from)
-    {
-        return reinterpret_cast<To>(std::forward<From>(from));
-    }
-
-    template <typename To, typename From>
-    inline constexpr To //
-    casts(From&& from)
-    {
-        return static_cast<To>(std::forward<From>(from));
-    }
-
-    template <typename To, typename From>
-    inline constexpr To //
-    castf(From&& from)
-    {
-        return ((To)(std::forward<From>(from)));
-    }
 }; // namespace STD_EXT_HPP_NAMESPACE::literals
 
 #if !defined(STD_EXT_NO_NAMESPACE)
 using namespace STD_EXT_HPP_NAMESPACE_CAPITAL;
 using namespace STD_EXT_HPP_NAMESPACE;
 using namespace STD_EXT_HPP_NAMESPACE::literals;
+
+    #define castc(to, from) const_cast<to>(from)
+    #define castd(to, from) dynamic_cast<to>(from)
+    #define castr(to, from) reinterpret_cast<to>(from)
+    #define casts(to, from) static_cast<to>(from)
+    #define castf(to, from) (to)(from)
 #endif
 
 #endif // STD_EXTENTION_HXX
