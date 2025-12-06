@@ -293,8 +293,6 @@ namespace STD_EXT_HPP_NAMESPACE::i_ // internal namespace
 
 namespace STD_EXT_HPP_NAMESPACE_CAPITAL
 {
-    inline const std::size_t DEFAULT_ALITNMENT = 16;
-
     using i8 = std::int8_t;
     using u8 = std::uint8_t;
     using i16 = std::int16_t;
@@ -308,6 +306,8 @@ namespace STD_EXT_HPP_NAMESPACE_CAPITAL
     using usz = std::size_t;
     using ssz = std::ptrdiff_t;
     using ptrdiff = std::ptrdiff_t;
+    using uptr = std::uintptr_t;
+    using iptr = std::intptr_t;
 
     using uchar = unsigned char;
     using char8 = char8_t;
@@ -346,6 +346,8 @@ namespace STD_EXT_HPP_NAMESPACE_CAPITAL
     using atomic_usz = std::atomic<usz>;
     using atomic_ssz = std::atomic<ssz>;
     using atomic_ptrdiff = std::atomic<ptrdiff>;
+    using atomic_uptr = std::atomic<uptr>;
+    using atomic_iptr = std::atomic<iptr>;
 
     using atomic_char = std::atomic<char>;
     using atomic_uchar = std::atomic<uchar>;
@@ -459,6 +461,8 @@ namespace STD_EXT_HPP_NAMESPACE
 {
     using namespace STD_EXT_HPP_NAMESPACE_CAPITAL;
 
+    inline const std::size_t DEFAULT_ALITNMENT = 16;
+
     template <typename T>
     inline constexpr auto //
     aligned [[nodiscard]] (const T& size, std::size_t alignment = DEFAULT_ALITNMENT) noexcept
@@ -482,39 +486,6 @@ namespace STD_EXT_HPP_NAMESPACE
         return size;
     }
 
-    // retuns number of elements in a given array
-    template <typename T>
-        requires std::is_bounded_array_v<T>
-    inline constexpr auto //
-    elmsof [[nodiscard]] (const T& arr) noexcept
-    {
-        return sizeof(T) / sizeof(arr[0]);
-    }
-
-    template <typename T>
-    concept sizeof2_compatible = requires(T container) //
-    {
-        { container.size() } -> std::convertible_to<std::size_t>;
-        { sizeof(typename std::remove_cvref_t<decltype(container)>::value_type) } -> std::convertible_to<std::size_t>;
-    };
-
-    // returns number of bytes in a given array base container
-    inline constexpr auto //
-    sizeof2 [[nodiscard]] (const sizeof2_compatible auto&& container)
-    {
-        using T = std::remove_cvref_t<decltype(container)>;
-        return sizeof(typename T::value_type) * std::forward<T>(container).size();
-    }
-
-    // returns number of bytes in a given array base container
-    template <typename T>
-        requires(std::is_bounded_array_v<T>)
-    inline constexpr auto //
-    sizeof2 [[nodiscard]] (T&& container)
-    {
-        return sizeof(std::forward<T>(container));
-    }
-
     template <typename T>
     struct c_delete
     {
@@ -526,45 +497,22 @@ namespace STD_EXT_HPP_NAMESPACE
     };
 
     template <typename Tp, typename Dp = std::default_delete<Tp>>
-    using box = std::unique_ptr<Tp, Dp>;
+    using unique = std::unique_ptr<Tp, Dp>;
 
     template <typename Tp>
-    using arc = std::shared_ptr<Tp>;
+    using shared = std::shared_ptr<Tp>;
 
     template <typename Tp>
     using weak = std::weak_ptr<Tp>;
 
-    template <typename T, typename D = std::default_delete<T>, typename... Args>
-        requires std::constructible_from<T, Args...>
-    inline constexpr box<T, D> //
-    new_box(Args&&... args)
-    {
-        return box<T, D>(new T(std::forward<Args>(args)...));
-    }
+    template <typename Tp, typename Dp = std::default_delete<Tp>>
+    using atomic_unique = std::atomic<unique<Tp, Dp>>;
 
-    template <typename T, typename D = std::default_delete<T>, typename... Args>
-        requires std::constructible_from<T, Args...>
-    inline constexpr void //
-    set_box(box<T, D>& box, Args&&... args)
-    {
-        box.reset(new T(std::forward<Args>(args)...));
-    }
+    template <typename Tp>
+    using atomic_shared = std::atomic<shared<Tp>>;
 
-    template <typename T, typename... Args>
-        requires std::constructible_from<T, Args...>
-    inline constexpr arc<T> //
-    new_arc(Args&&... args)
-    {
-        return arc<T>(new T(std::forward<Args>(args)...));
-    }
-
-    template <typename T, typename... Args>
-        requires std::constructible_from<T, Args...>
-    inline constexpr void //
-    set_arc(arc<T>& arc, Args&&... args)
-    {
-        arc.reset(new T(std::forward<Args>(args)...));
-    }
+    template <typename Tp>
+    using atomic_weak = std::atomic<weak<Tp>>;
 
     // This outperform libc++'s std::mutex (~2M /s) on Windows 10/11, max at 16 thread Ryzen 7700X, 64M-718M /s
     class spinlock
@@ -753,6 +701,18 @@ namespace STD_EXT_HPP_NAMESPACE::literals
         return static_cast<std::ptrdiff_t>(i);
     }
 
+    inline consteval std::uintptr_t //
+    operator""_uptr(unsigned long long i)
+    {
+        return static_cast<std::uintptr_t>(i);
+    }
+
+    inline consteval std::intptr_t //
+    operator""_iptr(unsigned long long i)
+    {
+        return static_cast<std::intptr_t>(i);
+    }
+
     inline consteval float //
     operator""_f32(long double f)
     {
@@ -796,11 +756,14 @@ using namespace STD_EXT_HPP_NAMESPACE_CAPITAL;
 using namespace STD_EXT_HPP_NAMESPACE;
 using namespace STD_EXT_HPP_NAMESPACE::literals;
 
-    #define castc(to, from) const_cast<to>(from)
-    #define castd(to, from) dynamic_cast<to>(from)
-    #define castr(to, from) reinterpret_cast<to>(from)
-    #define casts(to, from) static_cast<to>(from)
-    #define castf(to, from) (to)(from)
+    #define castc const_cast
+    #define castd dynamic_cast
+    #define castr reinterpret_cast
+    #define casts static_cast
+
+    #define sizeof2(cxx_arr) (cxx_arr.size() * sizeof(decltype(cxx_arr)::value_type))
+    #define lengthof(arr)    (sizeof(arr) / sizeof(arr[0]))
+    #define widthof(x)       (sizeof(x) * BITS)
 #endif
 
 #endif // STD_EXTENTION_HXX
