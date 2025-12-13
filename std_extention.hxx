@@ -486,11 +486,10 @@ namespace STD_EXT_HPP_NAMESPACE
         return size;
     }
 
-    template <typename T>
     struct c_delete
     {
         inline static constexpr void //
-        operator()(T* p) noexcept
+        operator()(void* p) noexcept
         {
             std::free(p);
         }
