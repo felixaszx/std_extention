@@ -27,7 +27,7 @@
 
 namespace STD_EXT_HPP_NAMESPACE::i_ // internal namespace
 {
-    template <class... F>
+    template <typename... F>
     struct overload_call_t : F...
     {
         using F::operator()...;
@@ -361,7 +361,7 @@ namespace STD_EXT_HPP_NAMESPACE_CAPITAL
 
     template <typename Idx = std::size_t, auto C = std::numeric_limits<std::size_t>::max(), typename Accessor = void>
         requires std::unsigned_integral<Idx>
-    class ts_idx
+    struct ts_idx
     {
         friend Accessor;
 
@@ -429,7 +429,7 @@ namespace STD_EXT_HPP_NAMESPACE_CAPITAL
         ts_idx() = default;
     };
 
-    enum class cmp_result : signed char
+    enum struct cmp_result : signed char
     {
         less = -1,
         equivalent = 0,
@@ -514,7 +514,7 @@ namespace STD_EXT_HPP_NAMESPACE
     using atomic_weak = std::atomic<weak<Tp>>;
 
     // This outperform libc++'s std::mutex (~2M /s) on Windows 10/11, max at 16 thread Ryzen 7700X, 64M-718M /s
-    class spinlock
+    struct spinlock
     {
       private:
         std::atomic_flag m_ = false;
@@ -763,6 +763,7 @@ using namespace STD_EXT_HPP_NAMESPACE::literals;
     #define sizeof2(cxx_arr) (cxx_arr.size() * sizeof(decltype(cxx_arr)::value_type))
     #define lengthof(arr)    (sizeof(arr) / sizeof(arr[0]))
     #define widthof(x)       (sizeof(x) * BITS)
+    #define swap_clear(cxx_container) (decltype(cxx_container)().swap(cxx_container))
 
     #define panic     \
         std::abort(); \
