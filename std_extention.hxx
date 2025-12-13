@@ -492,7 +492,7 @@ namespace STD_EXT_HPP_NAMESPACE
         inline static constexpr void //
         operator()(T* p) noexcept
         {
-            free(p);
+            std::free(p);
         }
     };
 
@@ -764,6 +764,11 @@ using namespace STD_EXT_HPP_NAMESPACE::literals;
     #define sizeof2(cxx_arr) (cxx_arr.size() * sizeof(decltype(cxx_arr)::value_type))
     #define lengthof(arr)    (sizeof(arr) / sizeof(arr[0]))
     #define widthof(x)       (sizeof(x) * BITS)
+
+    #define panic     \
+        std::abort(); \
+        std::unreachable()
+
 #endif
 
 #endif // STD_EXTENTION_HXX
