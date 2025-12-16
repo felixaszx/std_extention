@@ -1,7 +1,7 @@
 /**
  * @file std_extention.hxx
  * @author Felixaszx (felixaszx@outlook.com)
- * @brief Core defines and help tempaltes for xtd
+ * @brief Core defines and help tempaltes
  * @version 0.1
  * @date 2025-07-12
  *
@@ -370,7 +370,7 @@ namespace STD_EXT_HPP_NAMESPACE_CAPITAL
         inline static const ts_idx zero = static_cast<Idx>(0);
         using idx_t = Idx;
 
-      private:
+      protected:
         idx_t idx_ = static_cast<idx_t>(-1);
 
       public:
@@ -516,7 +516,7 @@ namespace STD_EXT_HPP_NAMESPACE
     // This outperform libc++'s std::mutex (~2M /s) on Windows 10/11, max at 16 thread Ryzen 7700X, 64M-718M /s
     struct spinlock
     {
-      private:
+      protected:
         std::atomic_flag m_ = false;
 
       public:
@@ -755,19 +755,31 @@ using namespace STD_EXT_HPP_NAMESPACE_CAPITAL;
 using namespace STD_EXT_HPP_NAMESPACE;
 using namespace STD_EXT_HPP_NAMESPACE::literals;
 
+namespace std
+{
+    namespace fs = std::filesystem;
+};
+
     #define castc const_cast
     #define castd dynamic_cast
     #define castr reinterpret_cast
     #define casts static_cast
 
-    #define sizeof2(cxx_arr) (cxx_arr.size() * sizeof(decltype(cxx_arr)::value_type))
-    #define lengthof(arr)    (sizeof(arr) / sizeof(arr[0]))
-    #define widthof(x)       (sizeof(x) * BITS)
-    #define swap_clear(cxx_container) (decltype(cxx_container)().swap(cxx_container))
+    #define lengthof(arr) (sizeof(arr) / sizeof(arr[0]))
+    #define widthof(x)    (sizeof(x) * 8)
 
-    #define panic     \
-        std::abort(); \
-        std::unreachable()
+    #define sizeof2(c_arr)                    (c_arr.size() * sizeof(decltype(c_arr)::value_type))
+    #define swap_clear(container)             (decltype(container)().swap(container))
+    #define stl_expand(container, x)          (container.resize(container.size() + (x)))
+    #define stl_expand_capacity(container, x) (container.reserve(container.size() + (x)))
+
+    #define panic std::abort();
+    #define panic_if(condition)                                   \
+        if (condition)                                            \
+        {                                                         \
+            errln("CRASHED because of ({} == true)", #condition); \
+            panic;                                                \
+        }
 
 #endif
 
