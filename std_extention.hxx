@@ -359,12 +359,10 @@ namespace STD_EXT_HPP_NAMESPACE_CAPITAL
     using atomic_f32 = std::atomic<f32>;
     using atomic_f64 = std::atomic<f64>;
 
-    template <typename Idx = std::size_t, auto C = std::numeric_limits<std::size_t>::max(), typename Accessor = void>
+    template <typename Idx = std::size_t, auto C = std::numeric_limits<std::size_t>::max(), typename R = void>
         requires std::unsigned_integral<Idx>
     struct ts_idx
     {
-        friend Accessor;
-
       public:
         inline static const ts_idx null = static_cast<Idx>(-1);
         inline static const ts_idx zero = static_cast<Idx>(0);
@@ -774,11 +772,11 @@ namespace std
     #define stl_expand_capacity(container, x) (container.reserve(container.size() + (x)))
 
     #define panic std::abort();
-    #define panic_if(condition)                                   \
-        if (condition)                                            \
-        {                                                         \
-            errln("CRASHED because of ({} == true)", #condition); \
-            panic;                                                \
+    #define panic_if(condition, reasons)                                       \
+        if (condition)                                                         \
+        {                                                                      \
+            errln("CRASHED because of ({} == true): {}", #condition, reasons); \
+            panic;                                                             \
         }
 
 #endif
