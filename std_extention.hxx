@@ -773,7 +773,7 @@ namespace std
     #define stl_expand(container, x)          (container.resize(container.size() + (x)))
     #define stl_expand_capacity(container, x) (container.reserve(container.size() + (x)))
 
-    #define panic std::abort();
+    #define panic std::abort()
     #define panic_if(condition, reasons)                                       \
         if (condition)                                                         \
         {                                                                      \
