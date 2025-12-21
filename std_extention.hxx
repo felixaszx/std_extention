@@ -372,7 +372,7 @@ namespace STD_EXT_HPP_NAMESPACE_CAPITAL
         idx_t idx_ = static_cast<idx_t>(-1);
 
       public:
-        inline constexpr operator bool() const noexcept { return null.idx_ != idx_; }
+        inline constexpr operator bool() const noexcept { return valid(); }
         inline constexpr bool operator==(const ts_idx& x) const noexcept { return idx_ == x.idx_; }
         inline constexpr bool operator<=(const ts_idx& x) const noexcept { return idx_ <= x.idx_; }
         inline constexpr bool operator>=(const ts_idx& x) const noexcept { return idx_ >= x.idx_; }
@@ -381,6 +381,8 @@ namespace STD_EXT_HPP_NAMESPACE_CAPITAL
         inline constexpr ts_idx(idx_t i) { idx_ = i; }
         inline static consteval decltype(C) idx_class() noexcept { return C; };
         inline const ts_idx off_by(long long off) const noexcept { return *this ? ts_idx(idx_ + off) : null; };
+        inline const Idx number() const noexcept { return idx_; };
+        inline const bool valid() const noexcept { return null.idx_ != idx_; };
 
         template <std::integral I>
         inline constexpr //
