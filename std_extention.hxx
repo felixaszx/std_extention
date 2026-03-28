@@ -548,22 +548,12 @@ namespace STD_EXT_HPP_NAMESPACE
         }
     };
 
-    constexpr void //
-    line_out(const std::string_view& msg,
-             const std::string_view& prefix,
-             std::source_location src = std::source_location::current())
-    {
-        std::cout << std::format("[{}] {} ({}:{}:{})\n", prefix, //
-                                 msg,                            //
-                                 src.file_name(), src.line(), src.column());
-    }
-
-#define warrln(...) line_out(std::format(__VA_ARGS__), "WARNING", std::source_location::current())
-#define errln(...)  line_out(std::format(__VA_ARGS__), "ERROR", std::source_location::current())
+#define warnln(...) std::println(stdout, __VA_ARGS__)
+#define errln(...)  std::println(stderr, __VA_ARGS__)
 #if defined(NDEBUG)
     #define logln(...)
 #else
-    #define logln(...) line_out(std::format(__VA_ARGS__), "LOG", std::source_location::current())
+    #define logln(...) std::println(stdout, __VA_ARGS__)
 #endif
 
     template <typename... F>
@@ -773,11 +763,11 @@ namespace std
     #define stl_expand(container, x)          (container.resize(container.size() + (x)))
     #define stl_expand_capacity(container, x) (container.reserve(container.size() + (x)))
 
-    #define panic std::abort
+    #define panic std::terminate
     #define panic_if(condition, reasons)                                                          \
         if (condition)                                                                            \
         {                                                                                         \
-            std::cerr << std::format("CRASHED because of ({} == true): {}", #condition, reasons); \
+            std::cerr << std::format("CRASHED ({} == true): {}", #condition, reasons); \
             panic();                                                                              \
         }
 
