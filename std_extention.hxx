@@ -755,8 +755,8 @@ namespace std
     #define castr reinterpret_cast
     #define casts static_cast
 
-    #define lengthof(arr) (sizeof(arr) / sizeof(arr[0]))
-    #define widthof(x)    (sizeof(x) * 8)
+    #define lengthof(c_arr) (sizeof(c_arr) / sizeof(c_arr[0]))
+    #define widthof(x)      (sizeof(x) * CHAR_BIT)
 
     #define sizeof2(c_arr)                    (c_arr.size() * sizeof(decltype(c_arr)::value_type))
     #define swap_clear(container)             (decltype(container)().swap(container))
@@ -764,11 +764,11 @@ namespace std
     #define stl_expand_capacity(container, x) (container.reserve(container.size() + (x)))
 
     #define panic std::terminate
-    #define panic_if(condition, reasons)                                                          \
-        if (condition)                                                                            \
-        {                                                                                         \
+    #define panic_if(condition, reasons)                                               \
+        if (condition)                                                                 \
+        {                                                                              \
             std::cerr << std::format("CRASHED ({} == true): {}", #condition, reasons); \
-            panic();                                                                              \
+            panic();                                                                   \
         }
 
 #endif
