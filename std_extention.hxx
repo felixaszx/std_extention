@@ -358,6 +358,10 @@ namespace STD_EXT_HPP_NAMESPACE_CAPITAL
 
     using atomic_f32 = std::atomic<f32>;
     using atomic_f64 = std::atomic<f64>;
+    using atomic_flag = std::atomic_flag;
+
+    template <typename T>
+    using atomic = std::atomic<T>;
 
     template <typename Idx = std::size_t, auto C = std::numeric_limits<std::size_t>::max(), typename R = void>
         requires std::unsigned_integral<Idx>
@@ -382,7 +386,7 @@ namespace STD_EXT_HPP_NAMESPACE_CAPITAL
         inline static consteval decltype(C) idx_class() noexcept { return C; };
         inline const ts_idx off_by(long long off) const noexcept { return *this ? ts_idx(idx_ + off) : null; };
         inline const Idx number() const noexcept { return idx_; };
-        inline const bool valid() const noexcept { return null.idx_ != idx_; };
+        inline const bool valid [[nodiscard]] () const noexcept { return null.idx_ != idx_; };
 
         template <std::integral I>
         inline constexpr //
@@ -488,10 +492,9 @@ namespace STD_EXT_HPP_NAMESPACE
 
     struct c_delete
     {
-        inline static constexpr void //
+        inline constexpr void //
         operator()(void* p) noexcept
         {
-            std::free(p);
         }
     };
 
@@ -517,14 +520,14 @@ namespace STD_EXT_HPP_NAMESPACE
     struct spinlock
     {
       protected:
-        std::atomic_flag m_ = false;
+        atomic_bool m_ = false;
 
       public:
         inline constexpr bool //
         try_lock [[nodiscard]] () noexcept
         {
-            return !(m_.test(std::memory_order_relaxed) || //
-                     m_.test_and_set(std::memory_order_acquire));
+            return !(m_.load(std::memory_order_relaxed) || //
+                     m_.exchange(true, std::memory_order_acquire));
         }
 
         inline constexpr void //
@@ -544,16 +547,16 @@ namespace STD_EXT_HPP_NAMESPACE
         inline constexpr void //
         unlock() noexcept
         {
-            m_.clear(std::memory_order_release);
+            m_.store(false, std::memory_order_release);
         }
     };
 
-#define warnln(...) std::println(stdout, __VA_ARGS__)
-#define errln(...)  std::println(stderr, __VA_ARGS__)
+#define warnln(...) std::cout << std::format(__VA_ARGS__) << '\n'
+#define errln(...)  std::cerr << std::format(__VA_ARGS__) << '\n'
 #if defined(NDEBUG)
     #define logln(...)
 #else
-    #define logln(...) std::println(stdout, __VA_ARGS__)
+    #define logln(...) std::clog << std::format(__VA_ARGS__) << '\n'
 #endif
 
     template <typename... F>
@@ -764,11 +767,11 @@ namespace std
     #define stl_expand_capacity(container, x) (container.reserve(container.size() + (x)))
 
     #define panic std::terminate
-    #define panic_if(condition, reasons)                                               \
-        if (condition)                                                                 \
-        {                                                                              \
-            std::cerr << std::format("CRASHED ({} == true): {}", #condition, reasons); \
-            panic();                                                                   \
+    #define panic_if(condition, reasons)                                                 \
+        if (condition)                                                                   \
+        {                                                                                \
+            std::cerr << std::format("CRASHED ({} == true): {}\n", #condition, reasons); \
+            panic();                                                                     \
         }
 
 #endif
