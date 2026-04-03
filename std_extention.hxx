@@ -495,6 +495,7 @@ namespace STD_EXT_HPP_NAMESPACE
         inline constexpr void //
         operator()(void* p) noexcept
         {
+            std::free(p);
         }
     };
 
